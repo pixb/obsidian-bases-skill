@@ -68,5 +68,11 @@
     "should_trigger": ["Create a base file for my tasks", "Edit my reading list base", "Add a formula to calculate days until due"],
     "should_not_trigger": ["Edit my Obsidian settings", "Create a new note", "Install an Obsidian plugin"]
   },
-  "support_tier": "supported"
+  "support_tier": "supported",
+  "metadata": {
+    "created": "2024-09-20",
+    "last_updated": "2024-09-20",
+    "version": "1.0.0",
+    "author": "Pix"
+  }
 }

@@ -1,0 +1,53 @@
+{
+  "entries": {
+    "0df2d3f1bbad2935bf57bf973d0594838bb735ffdf5d1bd19731b386b925d7e7": {
+      "duration_ms": 0.0,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "SKIPPED: no eval runner"
+    },
+    "0f451591e8c77285333478c96f9cc6dc3e9406cf05b8b710a353a0bbee0c2050": {
+      "duration_ms": 29.565,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+    },
+    "5b6219eb1fda9b824fc75ff3ada18823330e42d021ea67d3a04c2741a912ae38": {
+      "duration_ms": 44.216,
+      "exit_code": 1,
+      "stderr": "",
+      "stdout": "{\n  \"valid\": false,\n  \"errors\": [\n    \"discovery.json is required and must define question, trigger, decision, evidence, and success_measure\"\n  ],\n  \"warnings\": [\n    \"SKILL.md body exceeds 500 lines (618 lines). Consider moving content to references/.\",\n    \"SKILL.md body has no '## Gotchas' section. This is where the environment-specific facts that defy reasonable assumptions live \\u2014 the part a model cannot supply on its own. Write 'None known' if the skill genuinely has none.\",\n    \"'license' field is missing from frontmatter\",\n    \"'metadata' field is missing from frontmatter\",\n    \"AGENTS.md not found. Adding an AGENTS.md companion file maximizes cross-tool discoverability (read by 15+ tools including Codex CLI, Cursor, Roo Code, Kilo Code, Kiro, Goose, and others).\",\n    \"'activation' field is missing from frontmatter. Add 'activation: /{skill-name}' for namespace enforcement.\",\n    \"'provenance' field is missing from frontmatter. Add provenance metadata (maintainer, version, created, source_references).\"\n  ]\n}\n"
+    },
+    "9a444297193a111cbc30fd2be1e18e292ccd012c5ac32a1e54a0fbf635e44b0b": {
+      "duration_ms": 29.49,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"clean\": true,\n  \"issues\": []\n}\n"
+    },
+    "afb795949c3b45f3c6697339b484096d777e630b51f4e620a2b454edaba87eea": {
+      "duration_ms": 29.573,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"clean\": true,\n  \"issues\": []\n}\n"
+    },
+    "e85b1d59ceb07b741a651014156c79bf46b4cb4682b308009972510fae1e6204": {
+      "duration_ms": 28.629,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"clean\": true,\n  \"issues\": []\n}\n"
+    },
+    "ed441c7fcaf08c107ccffd1990e654b4bf758585cd688911b42d888bfe140d38": {
+      "duration_ms": 32.392,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"clean\": true,\n  \"issues\": []\n}\n"
+    },
+    "efa3ed705a19d35361e74fb2c16be98414f31629d3cce18fb2d4cd9c887ceaf7": {
+      "duration_ms": 40.403,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "{\n  \"valid\": true,\n  \"errors\": [],\n  \"warnings\": []\n}\n"
+    }
+  },
+  "version": 1
+}
