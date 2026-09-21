@@ -1,0 +1,72 @@
+{
+  "question": "How can Obsidian users create and manage database-like views of their notes using Bases?",
+  "trigger": [
+    "User asks to create or edit .base files",
+    "User mentions Bases, table views, card views, filters, or formulas",
+    "User wants to organize notes by properties, tags, or folders",
+    "User needs computed values or summaries for their notes"
+  ],
+  "decision": [
+    "Create or edit .base files with proper YAML structure",
+    "Configure views, filters, formulas, and summaries",
+    "Validate base file syntax and structure"
+  ],
+  "evidence": [
+    "User requirements for note organization",
+    "Existing note properties and metadata",
+    "Desired output format (table, cards, list, map)"
+  ],
+  "success_measure": "User can create and use .base files to view, filter, and analyze their notes effectively",
+  "outcome": "Produce valid, functional .base files for Obsidian",
+  "intended_users": ["Obsidian users", "Knowledge managers", "Personal knowledge management enthusiasts"],
+  "input_types": ["note properties", "folder structure", "tag taxonomy", "user requirements"],
+  "output_artifacts": [".base files", "view configurations", "formula definitions"],
+  "use_cases": ["task tracking", "reading lists", "project management", "daily notes indexing", "knowledge organization"],
+  "examples": [
+    {
+      "invocation": "/obsidian-bases-skill Create a task tracker with due dates and priorities",
+      "description": "Create a base file to track tasks with filtering and sorting"
+    },
+    {
+      "invocation": "/obsidian-bases-skill Make a reading list view for my books and articles",
+      "description": "Create a card view for managing reading materials"
+    }
+  ],
+  "permissions_systems": ["Read note metadata", "Write .base files to vault"],
+  "typical_completion_time": "2-10 minutes",
+  "compatibility": {
+    "declared": ["obsidian"],
+    "certified": []
+  },
+  "environment": {
+    "documentation_sources": ["Obsidian Bases documentation", "YAML specification"],
+    "data_sources": ["User's Obsidian vault", "Note frontmatter properties"],
+    "required_capabilities": ["Read note metadata", "Write YAML files", "Understand Obsidian property system"],
+    "readiness_checks": ["Vault is accessible", "Note properties are documented", "Base file format is understood"]
+  },
+  "risk": {
+    "tier": "moderate",
+    "permissions": ["Read note metadata", "Write .base files"],
+    "mutation_boundary": "approval-required",
+    "approval_required": ["User confirms base file location and structure"]
+  },
+  "software_mutation": {
+    "applies": false,
+    "affected_structures": [],
+    "invariants": [],
+    "sources_of_truth": [],
+    "invalid_states_prevented": [],
+    "state_transitions": []
+  },
+  "data_interfaces": {
+    "applies": false
+  },
+  "semantic_contract": {
+    "applies": false
+  },
+  "routing_tests": {
+    "should_trigger": ["Create a base file for my tasks", "Edit my reading list base", "Add a formula to calculate days until due"],
+    "should_not_trigger": ["Edit my Obsidian settings", "Create a new note", "Install an Obsidian plugin"]
+  },
+  "support_tier": "supported"
+}

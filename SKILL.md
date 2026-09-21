@@ -1,392 +1,211 @@
 ---
 name: obsidian-bases-skill
 description: Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.
+activation: /obsidian-bases-skill
+license: MIT
+metadata:
+  created: 2024-09-20
+  last_reviewed: 2024-09-20
+  review_interval_days: 90
+  version: 1.0.0
+  author: "Pix"
+  dependencies: []
+provenance:
+  maintainer: "Pix"
+  source_references:
+    - "https://help.obsidian.md/bases/syntax"
+    - "https://help.obsidian.md/bases/functions"
+    - "https://help.obsidian.md/bases/views"
 ---
 
 # Obsidian Bases Skill
 
-This skill enables skills-compatible agents to create and edit valid Obsidian Bases (`.base` files) including views, filters, formulas, and all related configurations.
+Create and edit valid Obsidian Bases (`.base` files) with views, filters, formulas, and summaries for database-like views of notes.
 
-## Overview
+## When to Use
 
-Obsidian Bases are YAML-based files that define dynamic views of notes in an Obsidian vault. A Base file can contain multiple views, global filters, formulas, property configurations, and custom summaries.
+Activate this skill when:
+- User asks to create or edit `.base` files
+- User mentions "Bases", "base files", "database views", "table views", "card views"
+- User wants to filter, sort, or group notes by properties
+- User needs to create formulas for computed values
+- User wants to display notes in table, card, list, or map formats
+- User mentions "Obsidian database" or "dynamic views"
 
-## File Format
+## Data Source
 
-Base files use the `.base` extension and contain valid YAML. They can also be embedded in Markdown code blocks.
+This skill works with local Obsidian vault files. No external APIs required.
 
-## Complete Schema
+**File format**: YAML-based `.base` files in Obsidian vaults
 
-```yaml
-# Global filters apply to ALL views in the base
-filters:
-  # Can be a single filter string
-  # OR a recursive filter object with and/or/not
-  and: []
-  or: []
-  not: []
+**Key concepts**:
+- Views: table, cards, list, map
+- Filters: global and per-view filtering with and/or/not logic
+- Formulas: computed values using built-in functions
+- Properties: note properties, file metadata, formula results
 
-# Define formula properties that can be used across all views
-formulas:
-  formula_name: 'expression'
+## Workflows
 
-# Configure display names and settings for properties
-properties:
-  property_name:
-    displayName: "Display Name"
-  formula.formula_name:
-    displayName: "Formula Display Name"
-  file.ext:
-    displayName: "Extension"
+### Workflow 1: Create a Simple Table View
 
-# Define custom summary formulas
-summaries:
-  custom_summary_name: 'values.mean().round(3)'
+1. **Identify user requirements**
+   - What notes to include (tags, folders, properties)
+   - What columns to display
+   - Sorting and grouping needs
 
-# Define one or more views
-views:
-  - type: table | cards | list | map
-    name: "View Name"
-    limit: 10                    # Optional: limit results
-    groupBy:                     # Optional: group results
-      property: property_name
-      direction: ASC | DESC
-    filters:                     # View-specific filters
-      and: []
-    order:                       # Properties to display in order
-      - file.name
-      - property_name
-      - formula.formula_name
-    summaries:                   # Map properties to summary formulas
-      property_name: Average
-```
+2. **Create base file structure**
+   ```yaml
+   # Example: Task tracker
+   filters:
+     and:
+       - file.hasTag("task")
+       - 'file.ext == "md"'
+   
+   views:
+     - type: table
+       name: "Tasks"
+       order:
+         - file.name
+         - status
+         - priority
+   ```
 
-## Filter Syntax
+3. **Add formulas if needed**
+   ```yaml
+   formulas:
+     days_until_due: 'if(due, ((date(due) - today()) / 86400000).round(0), "")'
+   ```
 
-Filters narrow down results. They can be applied globally or per-view.
+4. **Configure property display**
+   ```yaml
+   properties:
+     status:
+       displayName: "Status"
+     formula.days_until_due:
+       displayName: "Days Left"
+   ```
 
-### Filter Structure
+5. **Save as `.base` file**
 
-```yaml
-# Single filter
-filters: 'status == "done"'
+### Workflow 2: Create Filtered Views
 
-# AND - all conditions must be true
-filters:
-  and:
-    - 'status == "done"'
-    - 'priority > 3'
+1. **Define filter criteria**
+   ```yaml
+   filters:
+     or:
+       - file.hasTag("book")
+       - file.hasTag("article")
+   ```
 
-# OR - any condition can be true
-filters:
-  or:
-    - 'file.hasTag("book")'
-    - 'file.hasTag("article")'
+2. **Add view-specific filters**
+   ```yaml
+   views:
+     - type: table
+       name: "Reading List"
+       filters:
+         and:
+           - 'status == "to-read"'
+   ```
 
-# NOT - exclude matching items
-filters:
-  not:
-    - 'file.hasTag("archived")'
+### Workflow 3: Add Formulas and Summaries
 
-# Nested filters
-filters:
-  or:
-    - file.hasTag("tag")
-    - and:
-        - file.hasTag("book")
-        - file.hasLink("Textbook")
-    - not:
-        - file.hasTag("book")
-        - file.inFolder("Required Reading")
-```
+1. **Define formulas**
+   ```yaml
+   formulas:
+     reading_time: 'if(pages, (pages * 2).toString() + " min", "")'
+   ```
 
-### Filter Operators
+2. **Add summary formulas**
+   ```yaml
+   summaries:
+     avgPages: 'values.filter(value.isType("number")).mean().round(1)'
+   ```
 
-| Operator | Description |
-| ---------- | ------------- |
-| `==` | equals |
-| `!=` | not equal |
-| `>` | greater than |
-| `<` | less than |
-| `>=` | greater than or equal |
-| `<=` | less than or equal |
-| `&&` | logical and |
-| `\|\|` | logical or |
-| <code>!</code> | logical not |
+3. **Map properties to summaries**
+   ```yaml
+   views:
+     - type: table
+       summaries:
+         pages: avgPages
+   ```
 
-## Properties
+## Schema Reference
 
-### Three Types of Properties
-
-1. **Note properties** - From frontmatter: `note.author` or just `author`
-2. **File properties** - File metadata: `file.name`, `file.mtime`, etc.
-3. **Formula properties** - Computed values: `formula.my_formula`
-
-### File Properties Reference
-
-| Property | Type | Description |
-| ---------- | ------ | ------------- |
-| `file.name` | String | File name |
-| `file.basename` | String | File name without extension |
-| `file.path` | String | Full path to file |
-| `file.folder` | String | Parent folder path |
-| `file.ext` | String | File extension |
-| `file.size` | Number | File size in bytes |
-| `file.ctime` | Date | Created time |
-| `file.mtime` | Date | Modified time |
-| `file.tags` | List | All tags in file |
-| `file.links` | List | Internal links in file |
-| `file.backlinks` | List | Files linking to this file |
-| `file.embeds` | List | Embeds in the note |
-| `file.properties` | Object | All frontmatter properties |
-
-### The `this` Keyword
-
-- In main content area: refers to the base file itself
-- When embedded: refers to the embedding file
-- In sidebar: refers to the active file in main content
-
-## Formula Syntax
-
-Formulas compute values from properties. Defined in the `formulas` section.
-
-```yaml
-formulas:
-  # Simple arithmetic
-  total: "price * quantity"
-  
-  # Conditional logic
-  status_icon: 'if(done, "✅", "⏳")'
-  
-  # String formatting
-  formatted_price: 'if(price, price.toFixed(2) + " dollars")'
-  
-  # Date formatting
-  created: 'file.ctime.format("YYYY-MM-DD")'
-  
-  # Complex expressions
-  days_old: '((now() - file.ctime) / 86400000).round(0)'
-```
+For complete schema documentation, see [references/schema.md](references/schema.md).
 
 ## Functions Reference
 
-### Global Functions
+For complete function documentation, see [references/functions.md](references/functions.md).
 
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `date()` | `date(string): date` | Parse string to date. Format: `YYYY-MM-DD HH:mm:ss` |
-| `duration()` | `duration(string): duration` | Parse duration string |
-| `now()` | `now(): date` | Current date and time |
-| `today()` | `today(): date` | Current date (time = 00:00:00) |
-| `if()` | `if(condition, trueResult, falseResult?)` | Conditional |
-| `min()` | `min(n1, n2, ...): number` | Smallest number |
-| `max()` | `max(n1, n2, ...): number` | Largest number |
-| `number()` | `number(any): number` | Convert to number |
-| `link()` | `link(path, display?): Link` | Create a link |
-| `list()` | `list(element): List` | Wrap in list if not already |
-| `file()` | `file(path): file` | Get file object |
-| `image()` | `image(path): image` | Create image for rendering |
-| `icon()` | `icon(name): icon` | Lucide icon by name |
-| `html()` | `html(string): html` | Render as HTML |
-| `escapeHTML()` | `escapeHTML(string): string` | Escape HTML characters |
+## Examples
 
-### Any Type Functions
+For complete examples, see [references/examples.md](references/examples.md).
 
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `isTruthy()` | `any.isTruthy(): boolean` | Coerce to boolean |
-| `isType()` | `any.isType(type): boolean` | Check type |
-| `toString()` | `any.toString(): string` | Convert to string |
+## Errors
 
-### Date Functions & Fields
+### Common Issues
 
-**Fields:** `date.year`, `date.month`, `date.day`, `date.hour`, `date.minute`, `date.second`, `date.millisecond`
+1. **Invalid YAML syntax**
+   - Check indentation (use spaces, not tabs)
+   - Verify quotes are properly matched
+   - Validate with YAML linter
 
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `date()` | `date.date(): date` | Remove time portion |
-| `format()` | `date.format(string): string` | Format with Moment.js pattern |
-| `time()` | `date.time(): string` | Get time as string |
-| `relative()` | `date.relative(): string` | Human-readable relative time |
-| `isEmpty()` | `date.isEmpty(): boolean` | Always false for dates |
+2. **Filter not working**
+   - Verify property names exist in notes
+   - Check filter syntax (single vs double quotes)
+   - Test with simpler filter first
 
-### Date Arithmetic
+3. **Formulas not computing**
+   - Check function syntax
+   - Verify property references
+   - Test with known values
 
-```yaml
-# Duration units: y/year/years, M/month/months, d/day/days, 
-#                 w/week/weeks, h/hour/hours, m/minute/minutes, s/second/seconds
+4. **Views not displaying**
+   - Verify view type is valid (table, cards, list, map)
+   - Check order array contains valid properties
+   - Ensure filters return results
 
-# Add/subtract durations
-"date + \"1M\""           # Add 1 month
-"date - \"2h\""           # Subtract 2 hours
-"now() + \"1 day\""       # Tomorrow
-"today() + \"7d\""        # A week from today
+## Validations
 
-# Subtract dates for millisecond difference
-"now() - file.ctime"
+### Before Saving
 
-# Complex duration arithmetic
-"now() + (duration('1d') * 2)"
-```
+1. **YAML validation**
+   ```bash
+   python -c "import yaml; yaml.safe_load(open('file.base'))"
+   ```
 
-### String Functions
+2. **Schema validation**
+   - Verify required sections present
+   - Check property types match
+   - Validate view configurations
 
-**Field:** `string.length`
+3. **Content validation**
+   - Test filters with sample data
+   - Verify formulas compute correctly
+   - Check summary functions work
 
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `contains()` | `string.contains(value): boolean` | Check substring |
-| `containsAll()` | `string.containsAll(...values): boolean` | All substrings present |
-| `containsAny()` | `string.containsAny(...values): boolean` | Any substring present |
-| `startsWith()` | `string.startsWith(query): boolean` | Starts with query |
-| `endsWith()` | `string.endsWith(query): boolean` | Ends with query |
-| `isEmpty()` | `string.isEmpty(): boolean` | Empty or not present |
-| `lower()` | `string.lower(): string` | To lowercase |
-| `title()` | `string.title(): string` | To Title Case |
-| `trim()` | `string.trim(): string` | Remove whitespace |
-| `replace()` | `string.replace(pattern, replacement): string` | Replace pattern |
-| `repeat()` | `string.repeat(count): string` | Repeat string |
-| `reverse()` | `string.reverse(): string` | Reverse string |
-| `slice()` | `string.slice(start, end?): string` | Substring |
-| `split()` | `string.split(separator, n?): list` | Split to list |
+## Gotchas
 
-### Number Functions
+- Formulas use single quotes when containing double quotes: `'if(done, "Yes", "No")'`
+- Date arithmetic uses milliseconds for day calculations: `86400000`
+- The `this` keyword refers to different things based on context (base file, embedding file, or active file)
+- Map view requires the Maps community plugin and latitude/longitude properties
+- Filter operators are case-sensitive
+- Summary functions require numeric data for mathematical operations
+- Property names with dots need quotes in formulas: `formula.my_formula`
+- Global filters apply to ALL views; view-specific filters apply only to that view
 
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `abs()` | `number.abs(): number` | Absolute value |
-| `ceil()` | `number.ceil(): number` | Round up |
-| `floor()` | `number.floor(): number` | Round down |
-| `round()` | `number.round(digits?): number` | Round to digits |
-| `toFixed()` | `number.toFixed(precision): string` | Fixed-point notation |
-| `isEmpty()` | `number.isEmpty(): boolean` | Not present |
+## Keywords
 
-### List Functions
-
-**Field:** `list.length`
-
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `contains()` | `list.contains(value): boolean` | Element exists |
-| `containsAll()` | `list.containsAll(...values): boolean` | All elements exist |
-| `containsAny()` | `list.containsAny(...values): boolean` | Any element exists |
-| `filter()` | `list.filter(expression): list` | Filter by condition (uses `value`, `index`) |
-| `map()` | `list.map(expression): list` | Transform elements (uses `value`, `index`) |
-| `reduce()` | `list.reduce(expression, initial): any` | Reduce to single value (uses `value`, `index`, `acc`) |
-| `flat()` | `list.flat(): list` | Flatten nested lists |
-| `join()` | `list.join(separator): string` | Join to string |
-| `reverse()` | `list.reverse(): list` | Reverse order |
-| `slice()` | `list.slice(start, end?): list` | Sublist |
-| `sort()` | `list.sort(): list` | Sort ascending |
-| `unique()` | `list.unique(): list` | Remove duplicates |
-| `isEmpty()` | `list.isEmpty(): boolean` | No elements |
-
-### File Functions
-
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `asLink()` | `file.asLink(display?): Link` | Convert to link |
-| `hasLink()` | `file.hasLink(otherFile): boolean` | Has link to file |
-| `hasTag()` | `file.hasTag(...tags): boolean` | Has any of the tags |
-| `hasProperty()` | `file.hasProperty(name): boolean` | Has property |
-| `inFolder()` | `file.inFolder(folder): boolean` | In folder or subfolder |
-
-### Link Functions
-
-| Function | Signature | Description |
-|----------|-----------|-------------|
-| `asFile()` | `link.asFile(): file` | Get file object |
-| `linksTo()` | `link.linksTo(file): boolean` | Links to file |
-
-### Object Functions
-
-| Function | Signature | Description |
-| ---------- | ----------- | ------------- |
-| `isEmpty()` | `object.isEmpty(): boolean` | No properties |
-| `keys()` | `object.keys(): list` | List of keys |
-| `values()` | `object.values(): list` | List of values |
-
-### Regular Expression Functions
-
-| Function | Signature | Description |
-|----------|-----------|-------------|
-| `matches()` | `regexp.matches(string): boolean` | Test if matches |
-
-## View Types
-
-### Table View
-
-```yaml
-views:
-  - type: table
-    name: "My Table"
-    order:
-      - file.name
-      - status
-      - due_date
-    summaries:
-      price: Sum
-      count: Average
-```
-
-### Cards View
-
-```yaml
-views:
-  - type: cards
-    name: "Gallery"
-    order:
-      - file.name
-      - cover_image
-      - description
-```
-
-### List View
-
-```yaml
-views:
-  - type: list
-    name: "Simple List"
-    order:
-      - file.name
-      - status
-```
-
-### Map View
-
-Requires latitude/longitude properties and the Maps community plugin.
-
-```yaml
-views:
-  - type: map
-    name: "Locations"
-    # Map-specific settings for lat/lng properties
-```
-
-## Default Summary Formulas
-
-| Name | Input Type | Description |
-| ------ | ------------ | ------------- |
-| `Average` | Number | Mathematical mean |
-| `Min` | Number | Smallest number |
-| `Max` | Number | Largest number |
-| `Sum` | Number | Sum of all numbers |
-| `Range` | Number | Max - Min |
-| `Median` | Number | Mathematical median |
-| `Stddev` | Number | Standard deviation |
-| `Earliest` | Date | Earliest date |
-| `Latest` | Date | Latest date |
-| `Range` | Date | Latest - Earliest |
-| `Checked` | Boolean | Count of true values |
-| `Unchecked` | Boolean | Count of false values |
-| `Empty` | Any | Count of empty values |
-| `Filled` | Any | Count of non-empty values |
-| `Unique` | Any | Count of unique values |
+obsidian, bases, base files, database views, table views, card views, list views, map views, filters, formulas, summaries, properties, grouping, sorting, dynamic views, note organization, metadata, frontmatter, file properties, computed values
 
 ## Complete Examples
 
-### Task Tracker Base
+### Example 1: Task Tracker
 
+**User request**: "Create a base to track my tasks with due dates and priorities"
+
+**Generated base**:
 ```yaml
 filters:
   and:
@@ -421,21 +240,13 @@ views:
     groupBy:
       property: status
       direction: ASC
-    summaries:
-      formula.days_until_due: Average
-
-  - type: table
-    name: "Completed"
-    filters:
-      and:
-        - 'status == "done"'
-    order:
-      - file.name
-      - completed_date
 ```
 
-### Reading List Base
+### Example 2: Reading List
 
+**User request**: "Make a base to track my reading list with books and articles"
+
+**Generated base**:
 ```yaml
 filters:
   or:
@@ -445,7 +256,6 @@ filters:
 formulas:
   reading_time: 'if(pages, (pages * 2).toString() + " min", "")'
   status_icon: 'if(status == "reading", "📖", if(status == "done", "✅", "📚"))'
-  year_read: 'if(finished_date, date(finished_date).year, "")'
 
 properties:
   author:
@@ -463,9 +273,6 @@ views:
       - file.name
       - author
       - formula.status_icon
-    filters:
-      not:
-        - 'status == "dropped"'
 
   - type: table
     name: "Reading List"
@@ -479,8 +286,11 @@ views:
       - formula.reading_time
 ```
 
-### Project Notes Base
+### Example 3: Project Dashboard
 
+**User request**: "Create a project dashboard showing all my projects with status and last updated"
+
+**Generated base**:
 ```yaml
 filters:
   and:
@@ -490,9 +300,6 @@ filters:
 formulas:
   last_updated: 'file.mtime.relative()'
   link_count: 'file.links.length'
-  
-summaries:
-  avgLinks: 'values.filter(value.isType("number")).mean().round(1)'
 
 properties:
   formula.last_updated:
@@ -508,21 +315,16 @@ views:
       - status
       - formula.last_updated
       - formula.link_count
-    summaries:
-      formula.link_count: avgLinks
     groupBy:
       property: status
       direction: ASC
-
-  - type: list
-    name: "Quick List"
-    order:
-      - file.name
-      - status
 ```
 
-### Daily Notes Index
+### Example 4: Daily Notes Index
 
+**User request**: "Index my daily notes with word count estimates"
+
+**Generated base**:
 ```yaml
 filters:
   and:
@@ -550,74 +352,27 @@ views:
       - file.mtime
 ```
 
-## Embedding Bases
+### Example 5: Complex Filtered View
 
-Embed in Markdown files:
+**User request**: "Show me all important notes that are either tasks or projects, but not archived"
 
-```markdown
-![[MyBase.base]]
-
-<!-- Specific view -->
-![[MyBase.base#View Name]]
-```
-
-## YAML Quoting Rules
-
-- Use single quotes for formulas containing double quotes: `'if(done, "Yes", "No")'`
-- Use double quotes for simple strings: `"My View Name"`
-- Escape nested quotes properly in complex expressions
-
-## Common Patterns
-
-### Filter by Tag
-
+**Generated base**:
 ```yaml
 filters:
   and:
-    - file.hasTag("project")
-```
+    - file.hasTag("important")
+    - or:
+        - file.hasTag("task")
+        - file.hasTag("project")
+    - not:
+        - file.hasTag("archived")
 
-### Filter by Folder
-
-```yaml
-filters:
-  and:
-    - file.inFolder("Notes")
-```
-
-### Filter by Date Range
-
-```yaml
-filters:
-  and:
-    - 'file.mtime > now() - "7d"'
-```
-
-### Filter by Property Value
-
-```yaml
-filters:
-  and:
-    - 'status == "active"'
-    - 'priority >= 3'
-```
-
-### Combine Multiple Conditions
-
-```yaml
-filters:
-  or:
-    - and:
-        - file.hasTag("important")
-        - 'status != "done"'
-    - and:
-        - 'priority == 1'
-        - 'due != ""'
-```
-
-## References
-
-- [Bases Syntax](https://help.obsidian.md/bases/syntax)
-- [Functions](https://help.obsidian.md/bases/functions)
-- [Views](https://help.obsidian.md/bases/views)
-- [Formulas](https://help.obsidian.md/formulas)
+views:
+  - type: table
+    name: "Important Items"
+    order:
+      - file.name
+      - file.tags
+      - file.mtime
+    summaries:
+      file.size: Sum
